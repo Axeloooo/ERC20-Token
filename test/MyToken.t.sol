@@ -7,11 +7,7 @@ import {MyToken} from "../src/MyToken.sol";
 
 contract MyTokenTest is Test {
     event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
+    event Approval(address indexed owner, address indexed spender, uint256 value);
 
     MyToken public token;
     MyTokenScript public deployer;
@@ -140,10 +136,7 @@ contract MyTokenTest is Test {
 
         assertEq(token.balanceOf(alice), transferAmount);
         assertEq(token.balanceOf(bob), STARTING_BALANCE - transferAmount);
-        assertEq(
-            token.allowance(bob, alice),
-            initialAllowance - transferAmount
-        );
+        assertEq(token.allowance(bob, alice), initialAllowance - transferAmount);
     }
 
     function testTransferFromInsufficientAllowanceReverts() public {
@@ -155,9 +148,7 @@ contract MyTokenTest is Test {
         token.transferFrom(bob, alice, 6);
     }
 
-    function testTransferFromCannotExceedOwnersBalanceEvenIfAllowanceHigh()
-        public
-    {
+    function testTransferFromCannotExceedOwnersBalanceEvenIfAllowanceHigh() public {
         uint256 charlieBal = 10;
         deal(address(token), charlie, charlieBal);
         vm.prank(charlie);
@@ -183,11 +174,7 @@ contract MyTokenTest is Test {
 
     // --- Fuzz / property-style checks ---
 
-    function testFuzz_ApproveSetsAllowance(
-        address owner,
-        address spender,
-        uint256 amt
-    ) public {
+    function testFuzz_ApproveSetsAllowance(address owner, address spender, uint256 amt) public {
         vm.assume(owner != address(0) && spender != address(0));
         vm.assume(owner != spender);
 
@@ -199,11 +186,7 @@ contract MyTokenTest is Test {
         assertEq(token.allowance(owner, spender), amt);
     }
 
-    function testFuzz_TransferKeepsTotalSupply(
-        address from,
-        address to,
-        uint128 amt
-    ) public {
+    function testFuzz_TransferKeepsTotalSupply(address from, address to, uint128 amt) public {
         vm.assume(from != address(0) && to != address(0));
         vm.assume(from != to);
 
@@ -220,15 +203,8 @@ contract MyTokenTest is Test {
         assertEq(token.balanceOf(from), 0);
     }
 
-    function testFuzz_TransferFromReducesAllowance(
-        address owner,
-        address spender,
-        address to,
-        uint128 amt
-    ) public {
-        vm.assume(
-            owner != address(0) && spender != address(0) && to != address(0)
-        );
+    function testFuzz_TransferFromReducesAllowance(address owner, address spender, address to, uint128 amt) public {
+        vm.assume(owner != address(0) && spender != address(0) && to != address(0));
         vm.assume(owner != spender && owner != to);
 
         deal(address(token), owner, amt);
